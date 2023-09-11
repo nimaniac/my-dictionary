@@ -1,25 +1,15 @@
 body{
-  margin:0;
+  margin: 0;
   padding: 0;
-  width: 100vw;
-  height:100vh;
-  background-color: #A3D5ff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow-x: hidden;
-  /* overflow-x: auto; */
-}
-
-.title{
-  display: flex;
-  justify-content: center;
-}
-
-.title h1{
-  color: #6f73d2;
+  /* width: 100vw;
+  height: 100vh;
+  background-color: #9f86c0 ;
+  overflow: hidden; */
 }
 
 ul{
   list-style: none;
+  margin: 0;
+  padding: 0;
 }
+

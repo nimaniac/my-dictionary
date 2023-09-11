@@ -1,88 +1,73 @@
-import { Paper, ThemeProvider, useMediaQuery, useTheme } from '@mui/material'
-import React, { useState } from 'react'
-import ToDoForm from './components/ToDoForm'
-import ToDosList from './components/ToDosList'
-import { paperStyles } from './custom-mui-styles'
-// import theme from './theme/theme'
+import React, { useEffect, useState } from 'react'
+import Header from './components/Header'
+import SearchForm from './components/SearchForm'
+import Definitions from './components/Definitions'
+import ThemeChange from './components/ThemeChange'
+import axios from 'axios'
+import { useTheme, useMediaQuery, Box } from '@mui/material'
 
 const App = () => {
 
   const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('sm'));
+  const matchesSm = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const [todo, setTodo] = useState('')
-  const [todos, setTodos] = useState([]);
-  const [editId, setEditId] = useState(0);
-  const [error, setError] = useState('');
-
-  const addTaskHandler = (event) => {
-    event.preventDefault();
+  const [word, setWord] = useState('');
+  const [meanings, setMeanings] = useState([]);
+  const [lightTheme, setLightTheme] = useState(false);
 
 
-    if (editId) {
-      const editTask = todos.find((task) => task.id === editId);
-      const updatedTodos = todos.map((task) =>
-        task.id === editTask.id ? (task = { id: task.id, todo }) : { id: task.id, todo: task.todo }
-      )
-      setTodos(updatedTodos);
-      setEditId(0);
-      setTodo('');
-      return;
+  const dictionaryApi = async () => {
+    try {
+      const data = await axios.get(`http://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+      setMeanings(data.data);
+    } catch (error) {
+      console.log(error)
     }
-
-    if (todo.length > 30) {
-      setError('only 30 characters allowed!!!');
-      return;
-    } else {
-      setError('')
-    }
-
-    if (todo !== "") {
-      setTodos([{ id: todo, todo }, ...todos]);
-      setTodo("");
-    }
-
   }
 
-  const deleteHandler = (id) => {
-    const updatedTodos = todos.filter((task) => task.id !== id);
-    setTodos(updatedTodos);
-  }
-
-  const editHandler = (id) => {
-    const editedTask = todos.find((task) => task.id === id);
-    setTodo(editedTask.todo)
-    setEditId(id);
-  }
+  useEffect(() => {
+    dictionaryApi();
+  }, [word])
 
   return (
+    <Box
+      sx={{
+        margin: 0,
+        padding: 0,
+        width: '100vw',
+        height: '100vh',
+        backgroundColor: lightTheme ? '#99edcc' : '#9f86c0',
+        overflow: 'hidden',
+      }}
+    >
+      <ThemeChange
+        lightTheme={lightTheme}
+        setLightTheme={setLightTheme}
+      />
+      <Header
+        word={word}
+        matchesSm={matchesSm}
+        lightTheme={lightTheme}
+      />
+      <SearchForm
+        word={word}
+        setWord={setWord}
+        setMeanings={setMeanings}
+        matchesSm={matchesSm}
+        lightTheme={lightTheme}
+      />
+      {
+        meanings &&
+        <Definitions
+          meanings={meanings}
+          word={word}
+          matchesSm={matchesSm}
+          lightTheme={lightTheme}
+        />
+      }
 
-      <div>
-        <Paper
-          elevation={20}
-          sx={{
-            ...paperStyles,
-            width: matches ? '100vw' : '65vw'
-          }}
-        >
-          <div className='title'>
-            <h1>todos list app</h1>
-          </div>
-          <ToDoForm
-            todo={todo}
-            setTodo={setTodo}
-            addTaskHandler={addTaskHandler}
-            errorState={error}
-            matches={matches}
-          />
-          <ToDosList
-            todos={todos}
-            deleteHandler={deleteHandler}
-            editHandler={editHandler}
-          />
-        </Paper>
-      </div>
 
+    </Box>
   )
 }
 
