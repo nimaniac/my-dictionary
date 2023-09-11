@@ -18,7 +18,7 @@ const App = () => {
 
   const dictionaryApi = async () => {
     try {
-      const data = await axios.get(`http://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+      const data = await axios.get(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
       setMeanings(data.data);
     } catch (error) {
       console.log(error)
